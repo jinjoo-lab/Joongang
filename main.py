@@ -34,7 +34,7 @@ def main():
             else:
                 for file_path in files:
                     info = data_service.get_file_info(file_path)
-                    print(f"  📄 {info['path']} ({info['size']} bytes)")
+                    print(f"{info['path']} ({info['size']} bytes)")
             return
 
         if load_data:
