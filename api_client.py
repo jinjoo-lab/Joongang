@@ -2,7 +2,8 @@ import requests
 import time
 from typing import Dict, Any, Optional
 from config import Config
-from models import APIResponse
+from dto.api_response import APIResponse
+from dto.joongang_response import JoongangAPIResponse
 
 class APIClient:
     
@@ -23,7 +24,6 @@ class APIClient:
         url = self.base_url
         for attempt in range(self.retry_count + 1):
             try:
-                print(f"API 요청 시도 {attempt + 1}/{self.retry_count + 1}: {method} {url}")
                 response = requests.request(
                     method=method,
                     url=url,
@@ -36,7 +36,6 @@ class APIClient:
                 return response
             except requests.exceptions.RequestException as e:
                 if attempt < self.retry_count:
-                    print(f"⏳ {self.retry_delay}초 후 재시도...")
                     time.sleep(self.retry_delay)
                 else:
                     raise
@@ -52,11 +51,21 @@ class APIClient:
 
             response = self._make_request("GET", params=params)
             data = response.json()
-            return APIResponse(
-                success=True,
-                data=data,
-                message="중앙일보 AI 데이터 조회 성공"
-            )
+            
+            # 응답 데이터 검증
+            try:
+                joongang_response = JoongangAPIResponse(**data)
+                return APIResponse(
+                    success=True,
+                    data=data,
+                    message=f"중앙일보 AI 데이터 조회 성공 - {joongang_response.count}개 기사"
+                )
+            except Exception as validation_error:
+                return APIResponse(
+                    success=False,
+                    message=f"응답 데이터 검증 실패: {str(validation_error)}"
+                )
+                
         except Exception as e:
             return APIResponse(
                 success=False,
