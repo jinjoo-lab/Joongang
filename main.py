@@ -23,8 +23,6 @@ def main():
         response = api_client.get_joongang_data(year, month, day)
 
         if response.success:
-            print("✅ 중앙일보 AI 데이터 조회 성공!")
-            print(f"📅 조회 날짜: {year}-{month}-{day}")
             print(json.dumps(response.data, indent=2, ensure_ascii=False))
         else:
             sys.exit(1)
