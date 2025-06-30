@@ -1,9 +1,12 @@
 import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import argparse
 import json
-from config import Config
-from api_client import APIClient
-from services.data_service import DataService
+from conf.config import Config
+from bin.api_client import APIClient
+from bin.data_service import DataService
 
 def main():
     parser = argparse.ArgumentParser(description="중앙일보 AI 데이터 API 호출 테스트 프로그램")
