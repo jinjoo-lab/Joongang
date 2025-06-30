@@ -12,28 +12,33 @@ LOG_DIR="$PROJECT_DIR/logs"
 
 # 로그 파일 설정
 DATE=$(date +"%Y%m%d")
-LOG_FILE="$LOG_DIR/batch_$DATE.log"
+LOG_FILE="$LOG_DIR/joongang_$DATE.log"
+ALL_LOG_FILE="$LOG_DIR/joongang.log"
 
 # 로그 디렉토리 생성
 mkdir -p "$LOG_DIR"
 
 # 실행 시간 로그
 echo "$(date): 배치 작업 시작" >> "$LOG_FILE"
+echo "$(date): 배치 작업 시작" >> "$ALL_LOG_FILE"
 
 # 프로젝트 디렉토리로 이동
 cd "$PROJECT_DIR" || {
     echo "$(date): 프로젝트 디렉토리 이동 실패" >> "$LOG_FILE"
+    echo "$(date): 프로젝트 디렉토리 이동 실패" >> "$ALL_LOG_FILE"
     exit 1
 }
 
-# 가상환경 Python으로 배치 스크립트 실행
-"$VENV_PYTHON" "$BATCH_SCRIPT" >> "$LOG_FILE" 2>&1
+# 가상환경 Python으로 배치 스크립트 실행 (tee 제거)
+"$VENV_PYTHON" "$BATCH_SCRIPT"
 
 # 실행 결과 확인
 if [ $? -eq 0 ]; then
     echo "$(date): 배치 작업 성공" >> "$LOG_FILE"
+    echo "$(date): 배치 작업 성공" >> "$ALL_LOG_FILE"
     exit 0
 else
     echo "$(date): 배치 작업 실패" >> "$LOG_FILE"
+    echo "$(date): 배치 작업 실패" >> "$ALL_LOG_FILE"
     exit 1
 fi 

@@ -16,16 +16,20 @@ from conf.config import Config
 
 # 로깅 설정
 def setup_logging():
+    """로깅 설정"""
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
     
-    log_file = log_dir / f"batch_{datetime.now().strftime('%Y%m')}.log"
-    
+    date_str = datetime.now().strftime('%Y%m%d')
+    daily_log_file = log_dir / f"joongang_{date_str}.log"
+    all_log_file = log_dir / "joongang.log"
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file, encoding='utf-8'),
+            logging.FileHandler(daily_log_file, encoding='utf-8'),
+            logging.FileHandler(all_log_file, encoding='utf-8'),
             logging.StreamHandler(sys.stdout)
         ]
     )
