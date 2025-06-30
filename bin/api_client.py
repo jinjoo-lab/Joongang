@@ -1,7 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import requests
 import time
 from typing import Dict, Any, Optional
-from config import Config
+from conf.config import Config
 from dto.api_response import APIResponse
 from dto.joongang_response import JoongangAPIResponse
 

@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-# .env 파일 로드
-load_dotenv()
+# .env 파일을 conf 디렉토리에서 명시적으로 로드
+load_dotenv(dotenv_path=Path(__file__).parent / '.env')
 
 class Config:    
     # API 설정

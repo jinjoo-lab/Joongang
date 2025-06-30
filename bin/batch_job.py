@@ -1,35 +1,43 @@
 #!/usr/bin/env python3
 """
-매일 오후 11시에 실행되어 해당 날짜 데이터를 수집하고 저장
+매일 자정에 실행되어 바로 전날 데이터를 수집하고 저장
 """
 
 import sys
-import logging
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from api_client import APIClient
-from services.data_service import DataService
+from bin.api_client import APIClient
+from bin.data_service import DataService
+from conf.config import Config
 
 # 로깅 설정
 def setup_logging():
+    """로깅 설정"""
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
     
-    log_file = log_dir / f"batch_{datetime.now().strftime('%Y%m')}.log"
-    
+    date_str = datetime.now().strftime('%Y%m%d')
+    daily_log_file = log_dir / f"joongang_{date_str}.log"
+    all_log_file = log_dir / "joongang.log"
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file, encoding='utf-8'),
+            logging.FileHandler(daily_log_file, encoding='utf-8'),
+            logging.FileHandler(all_log_file, encoding='utf-8'),
             logging.StreamHandler(sys.stdout)
         ]
     )
 
 def get_target_date():
-    today = datetime.now()
-    return today
+    now = datetime.now()
+    target_date = now - timedelta(days=1)
+    return target_date
 
 def run_batch_job():
     """배치 작업 실행"""

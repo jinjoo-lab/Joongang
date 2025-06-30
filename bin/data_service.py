@@ -1,8 +1,12 @@
-import json
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import json
 from datetime import datetime
 from typing import Dict, Any, Optional
 from pathlib import Path
+import logging
 
 class DataService:
     
@@ -20,9 +24,12 @@ class DataService:
         return month_dir
     
     def _get_file_path(self, year: str, month: str, day: str) -> Path:
-        month_dir = self._create_directory_structure(year, month)
-        filename = f"{year}-{month.zfill(2)}-{day.zfill(2)}.json"
-        return month_dir / filename
+        """파일 경로 생성 (DL_DATE=YYYYMMDD/Joongang_YYYYMMDD.json)"""
+        yyyymmdd = f"{year}{month.zfill(2)}{day.zfill(2)}"
+        dir_path = self.base_dir / f"DL_DATE={yyyymmdd}"
+        dir_path.mkdir(exist_ok=True)
+        filename = f"Joongang_{yyyymmdd}.json"
+        return dir_path / filename
     
     def save_api_response(self, year: str, month: str, day: str, data: Dict[str, Any]) -> bool:
         try:
@@ -88,4 +95,23 @@ class DataService:
             "size": stat.st_size,
             "modified": datetime.fromtimestamp(stat.st_mtime),
             "created": datetime.fromtimestamp(stat.st_ctime)
-        } 
+        }
+
+def setup_logging():
+    """로깅 설정"""
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    
+    date_str = datetime.now().strftime('%Y%m%d')
+    daily_log_file = log_dir / f"joongang_{date_str}.log"
+    all_log_file = log_dir / "joongang.log"
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(daily_log_file, encoding='utf-8'),
+            logging.FileHandler(all_log_file, encoding='utf-8'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    ) 
