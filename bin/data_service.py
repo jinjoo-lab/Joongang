@@ -25,9 +25,18 @@ class DataService:
     
     def _get_file_path(self, year: str, month: str, day: str) -> Path:
         """파일 경로 생성 (DL_DATE=YYYYMMDD/Joongang_YYYYMMDD.json)"""
-        yyyymmdd = f"{year}{month.zfill(2)}{day.zfill(2)}"
-        dir_path = self.base_dir / f"DL_DATE={yyyymmdd}"
+        # 타겟 날짜 계산
+        from datetime import timedelta
+        target_date = datetime(int(year), int(month), int(day))
+        
+        # 디렉토리는 타겟 날짜 + 1일로 생성
+        next_day = target_date + timedelta(days=1)
+        next_day_str = next_day.strftime('%Y%m%d')
+        dir_path = self.base_dir / f"DL_DATE={next_day_str}"
         dir_path.mkdir(exist_ok=True)
+        
+        # 파일명은 타겟 날짜로 생성
+        yyyymmdd = f"{year}{month.zfill(2)}{day.zfill(2)}"
         filename = f"Joongang_{yyyymmdd}.json"
         return dir_path / filename
     
